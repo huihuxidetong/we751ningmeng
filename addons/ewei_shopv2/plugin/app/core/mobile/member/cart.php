@@ -13,8 +13,14 @@ class Cart_EweiShopV2Page extends AppMobilePage
 		global $_GPC;
 		$uniacid = $_W['uniacid'];
 		$openid = $_W['openid'];
+		$merchidcart = $_GPC['merchid'];
 		$condition = ' and f.uniacid= :uniacid and f.openid=:openid and f.deleted=0';
-		$params = array(':uniacid' => $uniacid, ':openid' => $openid);
+		if(!empty($merchidcart)){
+			$condition =  $condition ." and f.merchid=:merchid ";
+			$params = array(':uniacid' => $uniacid, ':openid' => $openid, ':merchid' => $merchidcart);
+		}else{
+			$params = array(':uniacid' => $uniacid, ':openid' => $openid);
+		}
 		$list = array();
 		$total = 0;
 		$totalprice = 0;
@@ -124,7 +130,11 @@ class Cart_EweiShopV2Page extends AppMobilePage
 				$newlist = array();
 				foreach ($merch as $merchid => $merchlist ) 
 				{
-					$newlist[] = array('merchname' => $merch_user[$merchid]['merchname'], 'merchid' => $merchid, 'list' => $merchlist);
+					$merchTotalPrice = 0;
+					foreach ($merchlist as &$k ){
+						$merchTotalPrice += $k['total'] * $k['marketprice'];
+					}
+					$newlist[] = array('merchname' => $merch_user[$merchid]['merchname'], 'merchid' => $merchid, 'launchdeliveryfee' => $merch_user[$merchid]['launchdeliveryfee'], 'list' => $merchlist, 'merchTotalPrice' => $merchTotalPrice);
 				}
 			}
 			$result['merch_list'] = $newlist;
@@ -135,7 +145,12 @@ class Cart_EweiShopV2Page extends AppMobilePage
 		}
 		else 
 		{
-			$result['merch_list'] = array( array('merchname' => '', 'merchid' => 0, 'list' => $list) );
+			$result['merch_list'] = array( array('merchname' => '', 'merchid' => 0, 'list' => $list) ) ;
+		}
+		if(!empty($merchidcart)) {
+			$sql = "select * from " . tablename('ewei_shop_merch_user') . " where id =:merchid ";
+			$merch_user = pdo_fetch($sql, array(':merchid' => $merchidcart));
+			$result['merch_user'] = $merch_user;
 		}
 		app_json($result);
 	}
@@ -288,7 +303,7 @@ class Cart_EweiShopV2Page extends AppMobilePage
 		global $_W;
 		global $_GPC;
 		$ids = $_GPC['ids'];
-		if (empty($ids)) 
+		if (empty($ids))
 		{
 			app_error(AppError::$ParamsError);
 		}
@@ -297,12 +312,40 @@ class Cart_EweiShopV2Page extends AppMobilePage
 			$ids = htmlspecialchars_decode(str_replace('\\', '', $ids));
 			$ids = @json_decode($ids, true);
 		}
-		if (empty($ids)) 
+		if (empty($ids))
 		{
 			app_error(AppError::$ParamsError);
 		}
 		$sql = 'update ' . tablename('ewei_shop_member_cart') . ' set deleted=1 where uniacid=:uniacid and openid=:openid and id in (' . implode(',', $ids) . ')';
 		pdo_query($sql, array(':uniacid' => $_W['uniacid'], ':openid' => $_W['openid']));
+		app_json();
+	}
+
+	public function removeById()
+	{
+		global $_W;
+		global $_GPC;
+		$id = intval($_GPC['id']);
+		if (empty($id))
+		{
+			app_error(AppError::$ParamsError);
+		}
+		$sql = 'update ' . tablename('ewei_shop_member_cart') . ' set deleted=1 where uniacid=:uniacid and openid=:openid and id =:id';
+		pdo_query($sql, array(':uniacid' => $_W['uniacid'], ':openid' => $_W['openid'],':id' =>$id));
+		app_json();
+	}
+
+	public function removeallBymerch()
+	{
+		global $_W;
+		global $_GPC;
+		$merchid = $_GPC['merchid'];
+		if (empty($merchid))
+		{
+			app_error(AppError::$ParamsError);
+		}
+		$sql = 'update ' . tablename('ewei_shop_member_cart') . ' set deleted=1 where uniacid=:uniacid and openid=:openid and merchid=:merchid ';
+		pdo_query($sql, array(':uniacid' => $_W['uniacid'], ':openid' => $_W['openid'], ':merchid' => $merchid));
 		app_json();
 	}
 	public function tofavorite() 

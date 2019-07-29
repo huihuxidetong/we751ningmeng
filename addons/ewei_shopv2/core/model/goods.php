@@ -190,12 +190,12 @@ class Goods_EweiShopV2Model
 		}
 		if( !$random ) 
 		{
-			$sql = "SELECT id,title,buylevels,subtitle,thumb,thumb_url" . $officsql . ",marketprice,productprice,minprice,maxprice,isdiscount,isdiscount_time,isdiscount_discounts,sales,salesreal,total,description,bargain,`type`,ispresell,`virtual`,hasoption,video,bargain,hascommission,nocommission,commission,commission1_rate,commission1_pay,presellprice\r\n            FROM " . tablename("ewei_shop_goods") . " where  " . $condition . " ORDER BY " . $order . " " . $orderby . " LIMIT " . ($page - 1) * $pagesize . "," . $pagesize;
+			$sql = "SELECT merchid,id,title,buylevels,subtitle,thumb,thumb_url" . $officsql . ",marketprice,productprice,minprice,maxprice,isdiscount,isdiscount_time,isdiscount_discounts,sales,salesreal,total,description,bargain,`type`,ispresell,`virtual`,hasoption,video,bargain,hascommission,nocommission,commission,commission1_rate,commission1_pay,presellprice\r\n            FROM " . tablename("ewei_shop_goods") . " where  " . $condition . " ORDER BY " . $order . " " . $orderby . " LIMIT " . ($page - 1) * $pagesize . "," . $pagesize;
 			$total = pdo_fetchcolumn("select count(*) from " . tablename("ewei_shop_goods") . " where  " . $condition . " ", $params);
 		}
 		else 
 		{
-			$sql = "SELECT id,title,buylevels,thumb,thumb_url" . $officsql . ",marketprice,productprice,minprice,maxprice,isdiscount,isdiscount_time,isdiscount_discounts,sales,salesreal,total,description,bargain,`type`,ispresell,`virtual`,hasoption,bargain,hascommission,nocommission,commission,commission1_rate,commission1_pay,presellprice\r\n            FROM " . tablename("ewei_shop_goods") . " where  " . $condition . " ORDER BY rand() LIMIT " . $pagesize;
+			$sql = "SELECT merchid,id,title,buylevels,thumb,thumb_url" . $officsql . ",marketprice,productprice,minprice,maxprice,isdiscount,isdiscount_time,isdiscount_discounts,sales,salesreal,total,description,bargain,`type`,ispresell,`virtual`,hasoption,bargain,hascommission,nocommission,commission,commission1_rate,commission1_pay,presellprice\r\n            FROM " . tablename("ewei_shop_goods") . " where  " . $condition . " ORDER BY rand() LIMIT " . $pagesize;
 			$total = $pagesize;
 		}
 		$level = $this->getLevel($_W["openid"]);
@@ -575,10 +575,11 @@ class Goods_EweiShopV2Model
 			pdo_update("ewei_shop_member_history", array( "deleted" => 0, "times" => $history["times"] + 1 ), array( "id" => $history["id"] ));
 		}
 	}
-	public function getCartCount($isnewstore = 0) 
+	public function getCartCount($isnewstore = 0)
 	{
 		global $_W;
 		global $_GPC;
+		$merchid =  $_GPC["merchid"];
 		$paras = array( ":uniacid" => $_W["uniacid"] );
 		$paras[":openid"] = $_W["openid"];
 		$sqlcondition = "";
@@ -587,7 +588,8 @@ class Goods_EweiShopV2Model
 			$sqlcondition = " and isnewstore=:isnewstore";
 			$paras[":isnewstore"] = $isnewstore;
 		}
-		$count = pdo_fetchcolumn("select sum(total) from " . tablename("ewei_shop_member_cart") . " where uniacid=:uniacid and openid=:openid " . $sqlcondition . " and deleted=0 limit 1", $paras);
+		$paras[":merchid"] =$merchid;
+		$count = pdo_fetchcolumn("select sum(total) from " . tablename("ewei_shop_member_cart") . " where uniacid=:uniacid and merchid=:merchid  and openid=:openid " . $sqlcondition . " and deleted=0 limit 1", $paras);
 		return $count;
 	}
 	public function getSpecThumb($specs) 

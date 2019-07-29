@@ -138,6 +138,7 @@ class Goods_EweiShopV2Page extends AppMobilePage
 		$result = array( );
 		$openid = $_W["openid"];
 		$uniacid = $_W["uniacid"];
+		//$merchid = $_W["merchid"];
 		$id = intval($_GPC["id"]);
 		if( empty($id) ) 
 		{

@@ -56,6 +56,7 @@ class Create_EweiShopV2Page extends AppMobilePage
 		global $_GPC;
 		$uniacid = $_W["uniacid"];
 		$openid = $_W["openid"];
+		$formmerchid = $_GPC["merchid"];
 		if( empty($openid) ) 
 		{
 			app_error(AppError::$UserNotLogin);
@@ -63,7 +64,7 @@ class Create_EweiShopV2Page extends AppMobilePage
 		if( p("quick") ) 
 		{
 			$quickid = intval($_GPC["fromquick"]);
-			if( !empty($quickid) ) 
+			if( !empty($quickid) )
 			{
 				$quickinfo = p("quick")->getQuick($quickid);
 				if( empty($quickinfo) ) 
@@ -78,7 +79,7 @@ class Create_EweiShopV2Page extends AppMobilePage
 		$canusecard = true;
 		$member = m("member")->getMember($openid, true);
 		$packageid = intval($_GPC["packageid"]);
-		if( !$packageid ) 
+		if( !$packageid )
 		{
 			$merchdata = $this->merchData();
 			extract($merchdata);
@@ -118,7 +119,7 @@ class Create_EweiShopV2Page extends AppMobilePage
 			}
 			$optionid = intval($_GPC["optionid"]);
 			$total = intval($_GPC["total"]);
-			if( $total < 1 ) 
+			if( $total < 1 )
 			{
 				$total = 1;
 			}
@@ -144,13 +145,21 @@ class Create_EweiShopV2Page extends AppMobilePage
 			{
 				if( !empty($quickid) ) 
 				{
-					$sql = "SELECT c.goodsid,c.total,g.maxbuy,g.type,g.intervalfloor,g.intervalprice,g.issendfree,g.isnodiscount,g.ispresell,g.presellprice as gpprice,o.presellprice,g.preselltimeend,g.presellsendstatrttime,g.presellsendtime,g.presellsendtype" . ",g.weight,o.weight as optionweight,g.title,g.thumb,ifnull(o.marketprice, g.marketprice) as marketprice,o.title as optiontitle,c.optionid," . " g.storeids,g.isverify,g.isforceverifystore,g.deduct,g.manydeduct,g.virtual,o.virtual as optionvirtual,discounts," . " g.deduct2,g.ednum,g.edmoney,g.edareas,g.edareas_code,g.diyformtype,g.diyformid,diymode,g.dispatchtype,g.dispatchid,g.dispatchprice,g.minbuy " . " ,g.isdiscount,g.isdiscount_time,g.isdiscount_discounts,g.cates,g.isfullback, " . " g.virtualsend,invoice,o.specs,g.merchid,g.checked,g.merchsale,g.unite_total," . " g.buyagain,g.buyagain_islong,g.buyagain_condition, g.buyagain_sale, g.hasoption, g.threen" . " FROM " . tablename("ewei_shop_quick_cart") . " c " . " left join " . tablename("ewei_shop_goods") . " g on c.goodsid = g.id " . " left join " . tablename("ewei_shop_goods_option") . " o on c.optionid = o.id " . " where c.openid=:openid and c.selected=1 and  c.deleted=0 and c.uniacid=:uniacid and c.quickid=" . $quickid . "  order by c.id desc";
-					$goods = pdo_fetchall($sql, array( ":uniacid" => $uniacid, ":openid" => $openid ));
+					$sql = "SELECT c.goodsid,c.total,g.maxbuy,g.type,g.intervalfloor,g.intervalprice,g.issendfree,g.isnodiscount,g.ispresell,g.presellprice as gpprice,o.presellprice,g.preselltimeend,g.presellsendstatrttime,g.presellsendtime,g.presellsendtype" . ",g.weight,o.weight as optionweight,g.title,g.thumb,ifnull(o.marketprice, g.marketprice) as marketprice,o.title as optiontitle,c.optionid," . " g.storeids,g.isverify,g.isforceverifystore,g.deduct,g.manydeduct,g.virtual,o.virtual as optionvirtual,discounts," . " g.deduct2,g.ednum,g.edmoney,g.edareas,g.edareas_code,g.diyformtype,g.diyformid,diymode,g.dispatchtype,g.dispatchid,g.dispatchprice,g.minbuy " . " ,g.isdiscount,g.isdiscount_time,g.isdiscount_discounts,g.cates,g.isfullback, " . " g.virtualsend,invoice,o.specs,g.merchid,g.checked,g.merchsale,g.unite_total," . " g.buyagain,g.buyagain_islong,g.buyagain_condition, g.buyagain_sale, g.hasoption, g.threen" . " FROM " . tablename("ewei_shop_quick_cart") . " c " . " left join " . tablename("ewei_shop_goods") . " g on c.goodsid = g.id " . " left join " . tablename("ewei_shop_goods_option") . " o on c.optionid = o.id " . " where c.openid=:openid and c.selected=1 and  c.deleted=0 and c.uniacid=:uniacid and c.quickid=" . $quickid ;
+					if(!empty($formmerchid)){
+						$sql = $sql . " and c.merchid=:merchid ";
+					}
+					$sql = $sql ."  order by c.id desc";
+					$goods = pdo_fetchall($sql, array( ":uniacid" => $uniacid, ":openid" => $openid,":merchid"=> $formmerchid ));
 				}
 				else 
 				{
-					$sql = "SELECT c.goodsid,c.total,g.maxbuy,g.type,g.issendfree,g.isnodiscount,g.ispresell,g.presellprice as gpprice,o.presellprice,g.preselltimeend,g.presellsendstatrttime,g.presellsendtime,g.presellsendtype" . ",g.weight,o.weight as optionweight,g.title,g.thumb,ifnull(o.marketprice, g.marketprice) as marketprice,o.title as optiontitle,c.optionid,g.isfullback," . " g.storeids,g.isverify,g.isforceverifystore,g.deduct,g.manydeduct,g.virtual,o.virtual as optionvirtual,discounts," . " g.deduct2,g.ednum,g.edmoney,g.edareas,g.diyformtype,g.diyformid,diymode,g.dispatchtype,g.dispatchid,g.dispatchprice,g.minbuy " . " ,g.isdiscount,g.isdiscount_time,g.isdiscount_discounts,g.cates, " . " g.virtualsend,invoice,o.specs,g.merchid,g.checked,g.merchsale," . " g.buyagain,g.buyagain_islong,g.buyagain_condition, g.buyagain_sale" . " FROM " . tablename("ewei_shop_member_cart") . " c " . " left join " . tablename("ewei_shop_goods") . " g on c.goodsid = g.id " . " left join " . tablename("ewei_shop_goods_option") . " o on c.optionid = o.id " . " where c.openid=:openid and c.selected=1 and  c.deleted=0 and c.uniacid=:uniacid  order by c.id desc";
-					$goods = pdo_fetchall($sql, array( ":uniacid" => $uniacid, ":openid" => $openid ));
+					$sql = "SELECT c.goodsid,c.total,g.maxbuy,g.type,g.issendfree,g.isnodiscount,g.ispresell,g.presellprice as gpprice,o.presellprice,g.preselltimeend,g.presellsendstatrttime,g.presellsendtime,g.presellsendtype" . ",g.weight,o.weight as optionweight,g.title,g.thumb,ifnull(o.marketprice, g.marketprice) as marketprice,o.title as optiontitle,c.optionid,g.isfullback," . " g.storeids,g.isverify,g.isforceverifystore,g.deduct,g.manydeduct,g.virtual,o.virtual as optionvirtual,discounts," . " g.deduct2,g.ednum,g.edmoney,g.edareas,g.diyformtype,g.diyformid,diymode,g.dispatchtype,g.dispatchid,g.dispatchprice,g.minbuy " . " ,g.isdiscount,g.isdiscount_time,g.isdiscount_discounts,g.cates, " . " g.virtualsend,invoice,o.specs,g.merchid,g.checked,g.merchsale," . " g.buyagain,g.buyagain_islong,g.buyagain_condition, g.buyagain_sale" . " FROM " . tablename("ewei_shop_member_cart") . " c " . " left join " . tablename("ewei_shop_goods") . " g on c.goodsid = g.id " . " left join " . tablename("ewei_shop_goods_option") . " o on c.optionid = o.id " . " where c.openid=:openid and c.selected=1 and  c.deleted=0 and c.uniacid=:uniacid";
+					if(!empty($formmerchid)){
+						$sql = $sql . " and c.merchid=:merchid ";
+					}
+					$sql = $sql ."  order by c.id desc";
+					$goods = pdo_fetchall($sql, array( ":uniacid" => $uniacid, ":openid" => $openid,":merchid"=> $formmerchid ));
 				}
 				if( empty($goods) ) 
 				{
@@ -1986,6 +1995,7 @@ class Create_EweiShopV2Page extends AppMobilePage
 		global $_GPC;
 		$openid = $_W["openid"];
 		$uniacid = $_W["uniacid"];
+		$formmerchid = $_GPC["merchid"];
 		$member = m("member")->getMember($openid);
 		if( $member["isblack"] == 1 ) 
 		{
@@ -2004,7 +2014,7 @@ class Create_EweiShopV2Page extends AppMobilePage
 		{
 			$packageid = 0;
 		}
-		if( !empty($packageid) ) 
+		if( !empty($packageid) )
 		{
 			$package = pdo_fetch("SELECT id,title,price,freight,cash,starttime,endtime,dispatchtype FROM " . tablename("ewei_shop_package") . "\r\n                    WHERE uniacid = " . $uniacid . " and id = " . $packageid . " and deleted = 0 and status = 1  ORDER BY id DESC");
 			if( empty($package) ) 
@@ -2037,7 +2047,7 @@ class Create_EweiShopV2Page extends AppMobilePage
 		$dispatchtype = intval($_GPC["dispatchtype"]);
 		$carrierid = intval($_GPC["carrierid"]);
 		$goods = $_GPC["goods"];
-		if( is_string($goods) ) 
+		if( is_string($goods) )
 		{
 			$goodsstring = htmlspecialchars_decode(str_replace("\\", "", $_GPC["goods"]));
 			$goods = @json_decode($goodsstring, true);
@@ -3196,7 +3206,7 @@ class Create_EweiShopV2Page extends AppMobilePage
 		}
 		if( $_GPC["fromcart"] == 1 ) 
 		{
-			pdo_query("update " . tablename("ewei_shop_member_cart") . " set deleted=1 where  openid=:openid and uniacid=:uniacid and selected=1 ", array( ":uniacid" => $uniacid, ":openid" => $openid ));
+			pdo_query("update " . tablename("ewei_shop_member_cart") . " set deleted=1 where  openid=:openid and uniacid=:uniacid and selected=1 and merchid=:merchid ", array( ":uniacid" => $uniacid, ":openid" => $openid, ":merchid" => $formmerchid ));
 		}
 		if( p("quick") && !empty($_GPC["fromquick"]) ) 
 		{

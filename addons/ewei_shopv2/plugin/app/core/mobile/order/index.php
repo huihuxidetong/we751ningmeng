@@ -37,7 +37,7 @@ class Index_EweiShopV2Page extends AppMobilePage
 		$params = array( ":uniacid" => $uniacid, ":openid" => $openid );
 		$merchdata = $this->merchData();
 		extract($merchdata);
-		$condition .= " and merchshow=0 ";
+		//$condition .= " and merchshow=0 ";
 		if( $show_status != "" ) 
 		{
 			$show_status = intval($show_status);
@@ -62,7 +62,7 @@ class Index_EweiShopV2Page extends AppMobilePage
 		{
 			$condition .= " and userdeleted=0 ";
 		}
-		$com_verify = com("verify");
+		$com_verify = com("verify");;
 		$list = pdo_fetchall("select id,ordersn,price,userdeleted,isparent,refundstate,paytype,status,addressid,refundid,isverify,dispatchtype,verifytype,verifyinfo,verifycode,iscomment,iscycelbuy,verified from " . tablename("ewei_shop_order") . " where 1 " . $condition . " order by createtime desc LIMIT " . ($pindex - 1) * $psize . "," . $psize, $params);
 		$total = pdo_fetchcolumn("select count(*) from " . tablename("ewei_shop_order") . " where 1 " . $condition, $params);
 		$refunddays = intval($_W["shopset"]["trade"]["refunddays"]);

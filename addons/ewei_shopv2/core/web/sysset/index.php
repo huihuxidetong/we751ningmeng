@@ -163,7 +163,50 @@ class Index_EweiShopV2Page extends WebPage
 			plog("sysset.shop.edit", "修改系统设置-商城设置");
 			show_json(1);
 		}
+//		$member = m("member")->getMember('sns_wa_oTUX-4-HeDi50bODiCoD3GZELyD0');
+//		$data = $this->diyformData($member);
+//		var_dump( 0 <$data["merchid"]);
 		include($this->template("sysset/index"));
+	}
+
+	protected function diyformData($member, $goods_fields = false, $diyformid = false)
+	{
+		global $_W;
+		global $_GPC;
+		$diyform_plugin = p("diyform");
+		$order_formInfo = false;
+		$diyform_set = false;
+		$orderdiyformid = 0;
+		$fields = array( );
+		$f_data = array( );
+		if( $diyform_plugin )
+		{
+			$diyform_set = $_W["shopset"]["diyform"];
+			if( !empty($diyform_set["order_diyform_open"]) )
+			{
+				$orderdiyformid = intval($diyform_set["order_diyform"]);
+				if( !empty($orderdiyformid) )
+				{
+					$order_formInfo = $diyform_plugin->getDiyformInfo($orderdiyformid);
+					$fields = $order_formInfo["fields"];
+					$f_data = $diyform_plugin->getLastOrderData($orderdiyformid, $member);
+				}
+			}
+			if( !empty($diyformid) )
+			{
+				$order_formInfo = $diyform_plugin->getDiyformInfo($diyformid);
+				$fields = $order_formInfo["fields"];
+			}
+			else
+			{
+				if( !empty($goods_fields) )
+				{
+					$order_formInfo = $goods_fields;
+					$fields = $goods_fields;
+				}
+			}
+		}
+		return array( "diyform_plugin" => $diyform_plugin, "order_formInfo" => $order_formInfo, "diyform_set" => $diyform_set, "orderdiyformid" => $orderdiyformid, "has_fields" => !empty($fields), "fields" => $fields, "f_data" => $f_data );
 	}
 	public function follow() 
 	{

@@ -65,7 +65,8 @@ class Index_EweiShopV2Page extends MerchWebPage
 					show_json(0, $fdata["message"]);
 				}
 			}
-			$data = array( "uniacid" => $_W["uniacid"], "merchname" => trim($_GPC["merchname"]), "salecate" => trim($_GPC["salecate"]), "realname" => trim($_GPC["realname"]), "mobile" => trim($_GPC["mobile"]), "desc" => trim($_GPC["desc1"]), "address" => trim($_GPC["address"]), "tel" => trim($_GPC["tel"]), "lng" => $_GPC["map"]["lng"], "lat" => $_GPC["map"]["lat"], "logo" => save_media($_GPC["logo"]) );
+
+			$data = array( "uniacid" => $_W["uniacid"], "merchname" => trim($_GPC["merchname"]), "salecate" => trim($_GPC["salecate"]), "realname" => trim($_GPC["realname"]), "mobile" => trim($_GPC["mobile"]), "desc" => trim($_GPC["desc1"]), "address" => trim($_GPC["address"]), "tel" => trim($_GPC["tel"]), "lng" => $_GPC["map"]["lng"], "lat" => $_GPC["map"]["lat"], "launchdeliveryfee" => $_GPC["launchdeliveryfee"],"logo" => save_media($_GPC["logo"]) );
 			if( $diyform_flag ) 
 			{
 				$data["diyformdata"] = iserializer($fdata);

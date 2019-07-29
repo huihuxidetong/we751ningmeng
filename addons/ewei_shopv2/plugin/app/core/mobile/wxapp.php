@@ -55,7 +55,17 @@ class Wxapp_EweiShopV2Page extends Page
 		}
 		$pc = new WXBizDataCrypt($this->appid, $sessionKey);
 		$errCode = $pc->decryptData($encryptedData, $iv, $data);
-		//$errCode = 0;
+
+
+//		$errCode = 0;
+//		$data["openId"] = "sns_wa_oTUX-4-HeDi50bODiCoD3GZELyD0";
+//		$data["nickName"] = "查尔斯";
+//		$data["avatarUrl"] = "https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTLEaiaNGn4Ss6hhQ0OeuhJhjBjz042PKF5mdJHRwpq4vojDrIJAzj6okCNApS3XlibOMibx3q3LvktnQ/132";
+//		$data["gender"] = "1";
+//		$data = json_encode($data);
+
+
+
 		if( $errCode == 0 ) 
 		{
 			$data = json_decode($data, true);
