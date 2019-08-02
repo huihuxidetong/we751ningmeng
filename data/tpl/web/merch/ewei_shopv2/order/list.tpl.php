@@ -347,7 +347,7 @@
         <?php  } } ?>
         <tfoot>
         <tr>
-            <td {colspan='8'  class="text-right">
+            <td colspan='8'  class="text-right">
                 <?php  echo $pager;?>
             </td>
         </tr>

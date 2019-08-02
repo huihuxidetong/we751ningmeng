@@ -113,6 +113,7 @@ class List_EweiShopV2Page extends WebPage
 			$row["city"] = $address['city'];
 			$row["area"] = $address['area'];
 			$row["address"] = $address['address'];
+			$row["diydianpudizhi"] = $address['province'] . $address['city'] . $address['area'] .  $address['address'];
 			$row["diydianpumingcheng"] = iunserializer($row["diymemberdata"])['diydianpumingcheng'];
 			$row["diyfuzeren"] = iunserializer($row["diymemberdata"])['diyfuzeren'];
 			$row["groupname"] = (isset($res_group[$row["groupid"]]) ? $res_group[$row["groupid"]]["groupname"] : "");
@@ -142,7 +143,7 @@ class List_EweiShopV2Page extends WebPage
 				$row["remark"] = trim($row["content"]);
 			}
 			unset($row);
-			m("excel")->export($list, array( "title" => "会员数据-" . date("Y-m-d-H-i", time()), "columns" => array( array( "title" => "昵称", "field" => "nickname", "width" => 12 ), array( "title" => "姓名", "field" => "realname", "width" => 12 ), array( "title" => "手机号", "field" => "mobile", "width" => 12 ), array( "title" => "openid", "field" => "openid", "width" => 24 ), array( "title" => "会员等级", "field" => "levelname", "width" => 12 ), array( "title" => "会员分组", "field" => "groupname", "width" => 12 ), array( "title" => "注册时间", "field" => "createtime", "width" => 12 ), array( "title" => "积分", "field" => "credit1", "width" => 12 ), array( "title" => "余额", "field" => "credit2", "width" => 12 ), array( "title" => "成交订单数", "field" => "ordercount", "width" => 12 ), array( "title" => "成交总金额", "field" => "ordermoney", "width" => 12 ), array( "title" => "备注", "field" => "remark", "width" => 24 ) ) ));
+			m("excel")->export($list, array( "title" => "会员数据-" . date("Y-m-d-H-i", time()), "columns" => array( array( "title" => "昵称", "field" => "nickname", "width" => 12 ), array( "title" => "姓名", "field" => "realname", "width" => 12 ), array( "title" => "手机号", "field" => "mobile", "width" => 12 ),array( "title" => "店铺名称", "field" => "diydianpumingcheng", "width" => 12 ),array( "title" => "店铺地址", "field" => "diydianpudizhi", "width" => 12 ),array( "title" => "负责人", "field" => "diyfuzeren", "width" => 12 ), array( "title" => "openid", "field" => "openid", "width" => 24 ), array( "title" => "会员等级", "field" => "levelname", "width" => 12 ), array( "title" => "会员分组", "field" => "groupname", "width" => 12 ), array( "title" => "注册时间", "field" => "createtime", "width" => 12 ), array( "title" => "积分", "field" => "credit1", "width" => 12 ), array( "title" => "余额", "field" => "credit2", "width" => 12 ), array( "title" => "成交订单数", "field" => "ordercount", "width" => 12 ), array( "title" => "成交总金额", "field" => "ordermoney", "width" => 12 ), array( "title" => "备注", "field" => "remark", "width" => 24 ) ) ));
 		}
 		$open_redis = function_exists("redis") && !is_error(redis());
 		if( $join == "" && $condition == " and dm.uniacid=:uniacid" ) 
