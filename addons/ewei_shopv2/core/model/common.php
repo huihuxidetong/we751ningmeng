@@ -78,44 +78,44 @@ class Common_EweiShopV2Model
 			return $allset;
 		}
 	}
-	public function updateSysset($values, $uniacid = 0) 
-	{
-		global $_W;
-		global $_GPC;
-		if( empty($uniacid) ) 
-		{
-			$uniacid = $_W["uniacid"];
-		}
-		$setdata = pdo_fetch("select * from " . tablename("ewei_shop_sysset") . " where uniacid=:uniacid limit 1", array( ":uniacid" => $uniacid ));
-		if( empty($setdata) )
-		{
-			$res = pdo_insert("ewei_shop_sysset", array( "sets" => iserializer($values), "uniacid" => $uniacid ));
-			$setdata = array( "sets" => $values );
-		}
-		else
-		{
-			$sets = iunserializer($setdata["sets"]);
-			$sets = (is_array($sets) ? $sets : array( ));
-			foreach( $values as $key => $value )
-			{
-				foreach( $value as $k => $v )
-				{
-					$sets[$key][$k] = $v;
-				}
-			}
-			$res = pdo_update("ewei_shop_sysset", array( "sets" => iserializer($sets) ), array( "id" => $setdata["id"] ));
-			if( $res )
-			{
-				$setdata["sets"] = $sets;
-			}
-		}
-		if( empty($res) )
-		{
-			$setdata = pdo_fetch("select * from " . tablename("ewei_shop_sysset") . " where uniacid=:uniacid limit 1", array( ":uniacid" => $uniacid ));
-		}
-		m("cache")->set("sysset", $setdata, $uniacid);
-		$this->setGlobalSet($uniacid);
-	}
+    public function updateSysset($values, $uniacid = 0)
+    {
+        global $_W;
+        global $_GPC;
+        if( empty($uniacid) )
+        {
+            $uniacid = $_W["uniacid"];
+        }
+        $setdata = pdo_fetch("select * from " . tablename("ewei_shop_sysset") . " where uniacid=:uniacid limit 1", array( ":uniacid" => $uniacid ));
+        if( empty($setdata) )
+        {
+            $res = pdo_insert("ewei_shop_sysset", array( "sets" => iserializer($values), "uniacid" => $uniacid , "accountname" => $values['shop'][accountname], "account" =>$values['shop'][account]  ));
+            $setdata = array( "sets" => $values );
+        }
+        else
+        {
+            $sets = iunserializer($setdata["sets"]);
+            $sets = (is_array($sets) ? $sets : array( ));
+            foreach( $values as $key => $value )
+            {
+                foreach( $value as $k => $v )
+                {
+                    $sets[$key][$k] = $v;
+                }
+            }
+            $res = pdo_update("ewei_shop_sysset", array( "sets" => iserializer($sets), "accountname" => $values['shop'][accountname], "account" =>$values['shop'][account]  ), array( "id" => $setdata["id"] ));
+            if( $res )
+            {
+                $setdata["sets"] = $sets;
+            }
+        }
+        if( empty($res) )
+        {
+            $setdata = pdo_fetch("select * from " . tablename("ewei_shop_sysset") . " where uniacid=:uniacid limit 1", array( ":uniacid" => $uniacid ));
+        }
+        m("cache")->set("sysset", $setdata, $uniacid);
+        $this->setGlobalSet($uniacid);
+    }
 	public function deleteSysset($key, $uniacid = 0) 
 	{
 		global $_W;

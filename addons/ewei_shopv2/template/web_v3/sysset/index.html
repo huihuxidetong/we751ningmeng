@@ -189,8 +189,28 @@
                     <div class="help-block"> 如果开启此选项，非会员商品价格将会显示</div>
                 </div>
             </div>
-
-
+            <div class="form-group">
+                <label class="col-lg control-label">出款方账户名</label>
+                <div class="col-sm-9 col-xs-12">
+                    {ifp 'sysset.shop.edit'}
+                    <input type="text" id="accountname" name="data[accountname]" class="form-control" value="{$data['accountname']}" />
+                    {else}
+                    <input type="hidden" name="data[accountname]" value="{$data['accountname']}"/>
+                    <div class='form-control-static'>{$data['accountname']}</div>
+                    {/if}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg control-label">出款方账户</label>
+                <div class="col-sm-9 col-xs-12">
+                    {ifp 'sysset.shop.edit'}
+                    <input type="text" id="account" name="data[account]" class="form-control" value="{$data['account']}" />
+                    {else}
+                    <input type="hidden" name="data[account]" value="{$data['account']}"/>
+                    <div class='form-control-static'>{$data['account']}</div>
+                    {/if}
+                </div>
+            </div>
             <div class="form-group">
                 <label class="col-lg control-label"></label>
                 <div class="col-sm-9 col-xs-12">
@@ -201,5 +221,25 @@
             </div>
         </form>
     </div>
- 
+<script type="text/javascript">
+    $(function () {
+        $('form').submit(function(){
+            var flag = true;
+            var account = $("#account").val();
+            var account_name = $("#accountname").val();
+            if(account_name == ''){
+                $('form').attr('stop',1),tip.msgbox.err('请填写出款方账户名!');
+                flag = false;
+            }
+            if(account == ''){
+                $('form').attr('stop',1),tip.msgbox.err('请填写出款方账户!');
+                flag = false;
+            }
+            if(flag) {
+                $('form').removeAttr('stop');
+            }
+        });
+
+    })
+</script>
 {template '_footer'}

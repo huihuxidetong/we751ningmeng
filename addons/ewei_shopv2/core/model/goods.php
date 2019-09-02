@@ -207,7 +207,11 @@ class Goods_EweiShopV2Model
 			{
 				$list[$lk]["minprice"] = $lv["presellprice"];
 			}
-			if( $lv["hasoption"] == 1 ) 
+
+            $merch_user = pdo_fetch("select * from " . tablename("ewei_shop_merch_user") . " where id=:id", array( ":id" => $lv["merchid"]));
+            $list[$lk]["launchdeliveryfee"] = $merch_user['launchdeliveryfee'];
+
+            if( $lv["hasoption"] == 1 )
 			{
 				$pricemax = array( );
 				$options = pdo_fetchall("select * from " . tablename("ewei_shop_goods_option") . " where goodsid=:goodsid and                               uniacid=:uniacid order by displayorder asc", array( ":goodsid" => $lv["id"], ":uniacid" => $_W["uniacid"] ));

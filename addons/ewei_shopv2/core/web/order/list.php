@@ -1176,6 +1176,17 @@ class List_EweiShopV2Page extends WebPage
 	{
 		global $_W;
 		global $_GPC;
+
+
+
+
+
+
+
+
+
+
+
 		$orderData = $this->orderData(0, "status0");
 	}
 	public function status1() 
@@ -1259,5 +1270,13 @@ class List_EweiShopV2Page extends WebPage
 		}
 		show_json(1, array( "url" => referer() ));
 	}
+
+    public function getOrders()
+    {
+        global $_GPC;
+        $merch = intval($_GPC["merch"]);
+        $orderList = "[{ordersn:ME20190724182309805662},{ordersn:ME20190724182309805662}]";
+        show_json(1, array("orderList" => $orderList));
+    }
 }
 ?>
