@@ -57,12 +57,10 @@ class Print_EweiShopV2Page extends MerchWebPage
 		}
 
 		$goods = pdo_fetchall('SELECT g.*, o.goodssn as option_goodssn, o.productsn as option_productsn,o.total,g.type,o.optionname,o.optionid,o.price as orderprice,o.realprice,o.changeprice,o.oldprice,o.commission1,o.commission2,o.commission3,o.commissions' . $diyformfields . ' FROM ' . tablename('ewei_shop_order_goods') . ' o left join ' . tablename('ewei_shop_goods') . ' g on o.goodsid=g.id ' . ' WHERE o.orderid=:orderid and o.uniacid=:uniacid and o.merchid=:merchid', array(':orderid' => $id, ':uniacid' => $_W['uniacid'], ':merchid' => $_W['merchid']));
-
 		foreach ($goods as &$r) {
 			if (!empty($r['option_goodssn'])) {
 				$r['goodssn'] = $r['option_goodssn'];
 			}
-
 			if (!empty($r['option_productsn'])) {
 				$r['productsn'] = $r['option_productsn'];
 			}
@@ -76,9 +74,11 @@ class Print_EweiShopV2Page extends MerchWebPage
 				$showdiyform = true;
 			}
 		}
-
 		unset($r);
+		//计算商品总数量
+		$goods_sum = pdo_fetchcolumn('SELECT sum(o.total) as goods_sum FROM ' . tablename('ewei_shop_order_goods') . ' o left join ' . tablename('ewei_shop_goods') . ' g on o.goodsid=g.id ' . ' WHERE o.orderid=:orderid and o.uniacid=:uniacid and o.merchid=:merchid', array(':orderid' => $id, ':uniacid' => $_W['uniacid'], ':merchid' => $_W['merchid']));
 		$item['goods'] = $goods;
+		$item['goods_sum'] = $goods_sum;
 		$agents = array();
 
 		if ($p) {

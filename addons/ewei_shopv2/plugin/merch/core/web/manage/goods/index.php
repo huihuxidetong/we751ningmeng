@@ -185,6 +185,31 @@ class Index_EweiShopV2Page extends MerchWebPage
 		}
 		show_json(1, array( "url" => referer() ));
 	}
+	//一键上下架
+	public function shelvesall()
+	{
+		global $_W;
+		global $_GPC;
+		$status = intval($_GPC["status"]);
+		$condition =  " AND merchid=".$_W['merchid'];		
+		if ($status == 0) {
+			$condition .= " AND `status` = 1  and `total`>0 and `deleted`=0  AND `checked`=0";
+			$log = '一键下架商品';
+		} else if ($status == 1) {
+			$condition .= " AND `status` = 0 and `deleted`=0 AND `checked`=0";
+			$log = '一键上架商品';
+		}
+		$items = pdo_fetchall("SELECT id,title FROM " . tablename("ewei_shop_goods") . " WHERE uniacid=" . $_W["uniacid"] . $condition);
+		foreach( $items as $item ) 
+		{
+			pdo_update("ewei_shop_goods", array( "status" => $status), array("id" => $item["id"]));
+			//mplog("goods.edit", ("修改商品状态<br/>ID: " . $item["id"] . "<br/>商品名称: " . $item["title"] . "<br/>状态: " . $_GPC["status"] == 1 ? "上架" : "下架"));
+		}
+		if (count($items) > 0) {
+			mplog("goods.edit", $log);
+		}
+		show_json(1, array( "url" => referer() ));
+	}
 	public function delete1() 
 	{
 		global $_W;

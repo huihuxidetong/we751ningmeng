@@ -311,6 +311,11 @@ class Detail_EweiShopV2Page extends WebPage
 			}
 			$heads = pdo_fetch("select * from " . tablename("ewei_shop_member") . " where id=:id and uniacid=:uniacid limit 1", array( ":id" => $item["headsid"], ":uniacid" => $_W["uniacid"] ));
 		}
+		//增加商户名称
+		$diyRow = pdo_fetch("select diymemberdata from " . tablename("ewei_shop_member") . " where openid=:openid and uniacid=:uniacid limit 1", array( ":openid" => $item["openid"], ":uniacid" => $_W["uniacid"] ));
+		$item['diymemberdata'] = iunserializer($diyRow['diymemberdata']);
+		// var_dump($item['diymemberdata']);
+		// exit;
 		$use_membercard = false;
 		$membercard_info = array( );
 		if( p("membercard") ) 

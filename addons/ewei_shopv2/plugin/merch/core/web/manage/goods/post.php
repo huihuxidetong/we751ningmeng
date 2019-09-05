@@ -205,6 +205,8 @@ if( $_W["ispost"] )
 	}
 	$needcheck = false;
 	$keys = array( "title", "subtitle", "video", "thumb_url", "content", "followtip", "share_title", "description" );
+	//新增审核字段
+	array_push($keys,'marketprice','productprice');
 	foreach( $data as $key => $value ) 
 	{
 		if( in_array($key, $keys) && isset($item[$key]) && $data[$key] != $item[$key] ) 
