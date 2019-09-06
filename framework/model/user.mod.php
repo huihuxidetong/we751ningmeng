@@ -181,7 +181,6 @@ function user_single($user_or_uid) {
 		return false;
 	}
 	$sql = 'SELECT u.*, p.avatar FROM ' . tablename('users') . ' AS u LEFT JOIN '. tablename('users_profile') . ' AS p ON u.uid = p.uid '. $where. ' LIMIT 1';
-
 	$record = pdo_fetch($sql, $params);
 	if (empty($record)) {
 		return false;

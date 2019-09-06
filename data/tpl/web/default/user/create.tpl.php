@@ -1,8 +1,8 @@
-{template 'common/header'}
+<?php defined('IN_IA') or exit('Access Denied');?><?php (!empty($this) && $this instanceof WeModuleSite || 0) ? (include $this->template('common/header', TEMPLATE_INCLUDEPATH)) : (include template('common/header', TEMPLATE_INCLUDEPATH));?>
 <div class="new-keyword">
 	<ol class="breadcrumb we7-breadcrumb">
-		<a href="{url 'user/display'}"><i class="wi wi-back-circle"></i> </a>
-		<li><a href="{url 'user/display'}">用户管理</a></li>
+		<a href="<?php  echo url('user/display');?>"><i class="wi wi-back-circle"></i> </a>
+		<li><a href="<?php  echo url('user/display');?>">用户管理</a></li>
 		<li>添加用户</li>
 	</ol>
 	<form action="" class="we7-form" method="post" id="js-user-create" ng-controller="UserCreate" ng-cloak>
@@ -38,7 +38,7 @@
 					<input type="radio" id="endtype-1" ng-click="endtype = 1" ng-checked="endtype == 1">
 					<label class="radio-inline" for="endtype-1">设置期限</label>
 					<div ng-if="endtype == 1" class="we7-margin-top">
-						{php echo tpl_form_field_date('endtime');}
+						<?php  echo tpl_form_field_date('endtime');?>
 					</div>
 					<div class="help-block">用户的使用时间过期时，将无法使用系统功能。</div>
 				</div>
@@ -74,7 +74,7 @@
 		</div>
 
 		
-			{if permission_check_account_user('see_user_create_own_vice_founder')}
+			<?php  if(permission_check_account_user('see_user_create_own_vice_founder')) { ?>
 			<div class="form-group">
 				<label for="" class="control-label col-sm-2">所属副创始人</label>
 				<div class="form-controls col-sm-8">
@@ -82,7 +82,7 @@
 					<div class="help-block">请输入副创始人姓名</div>
 				</div>
 			</div>
-			{/if}
+			<?php  } ?>
 		
 		<div class="form-group">
 			<label for="" class="control-label col-sm-2">备注</label>
@@ -91,8 +91,8 @@
 			</div>
 		</div>
 		<input type="submit" name="submit" id="" value="提交" class="btn btn-primary" ng-click="checkSubmit($event)" ng-style="{'padding': '6px 50px'}"/>
-		<input type="hidden" name="token" value="{$_W['token']}" />
-		<input type="hidden" name="do" value="{$_GPC['do']}" />
+		<input type="hidden" name="token" value="<?php  echo $_W['token'];?>" />
+		<input type="hidden" name="do" value="<?php  echo $_GPC['do'];?>" />
 
 		<!-- 添加应用模态框 -->
 		<div class="modal" id="jurisdiction-add">
@@ -117,13 +117,13 @@
 										<th>模块标识</th>
 										<th></th>
 									</tr>
-									{loop $modules $module}
+									<?php  if(is_array($modules)) { foreach($modules as $module) { ?>
 									<tr>
-										<td>{$module['title']}{if $module['issystem']}<span class="label label-success">系统模块</span>{/if}</td>
-										<td>{$module['name']}</td>
-										<td><a class="btn btn-default js-btn-select {if is_array($extend['modules']) && in_array($module['name'], $extend['modules'])}btn-primary{/if}" data-title="{$module['title']}" data-name="{$module['name']}" onclick="$(this).toggleClass('btn-primary')">选取</a></td>
+										<td><?php  echo $module['title'];?><?php  if($module['issystem']) { ?><span class="label label-success">系统模块</span><?php  } ?></td>
+										<td><?php  echo $module['name'];?></td>
+										<td><a class="btn btn-default js-btn-select <?php  if(is_array($extend['modules']) && in_array($module['name'], $extend['modules'])) { ?>btn-primary<?php  } ?>" data-title="<?php  echo $module['title'];?>" data-name="<?php  echo $module['name'];?>" onclick="$(this).toggleClass('btn-primary')">选取</a></td>
 									</tr>
-									{/loop}
+									<?php  } } ?>
 								</table>
 							</div>
 							<div id="content-templates" class="tab-pane" role="tabpanel">
@@ -136,13 +136,13 @@
 										<th>模板标识</th>
 										<th></th>
 									</tr>
-									{loop $templates $temp}
+									<?php  if(is_array($templates)) { foreach($templates as $temp) { ?>
 									<tr>
-										<td>{$temp['title']}</td>
-										<td>{$temp['name']}</td>
-										<td><a class="btn btn-default js-btn-select {if is_array($extend['templates']) && in_array($temp['id'], $extend['templates'])}btn-primary{/if}" data-title="{$temp['title']}" data-name="{$temp['id']}" onclick="$(this).toggleClass('btn-primary')">选取</a></td>
+										<td><?php  echo $temp['title'];?></td>
+										<td><?php  echo $temp['name'];?></td>
+										<td><a class="btn btn-default js-btn-select <?php  if(is_array($extend['templates']) && in_array($temp['id'], $extend['templates'])) { ?>btn-primary<?php  } ?>" data-title="<?php  echo $temp['title'];?>" data-name="<?php  echo $temp['id'];?>" onclick="$(this).toggleClass('btn-primary')">选取</a></td>
 									</tr>
-									{/loop}
+									<?php  } } ?>
 								</table>
 							</div>
 						</div>
@@ -161,7 +161,7 @@
 
 <script type="text/javascript">
 	angular.module('userManageApp').value('config', {
-		groups: {php echo !empty($groups) ? json_encode($groups) : 'null'},
+		groups: <?php echo !empty($groups) ? json_encode($groups) : 'null'?>,
 	});
 	angular.bootstrap($('#js-user-create'), ['userManageApp']);
 
@@ -180,5 +180,5 @@
 
     })
 </script>
-{template 'common/footer'}
+<?php (!empty($this) && $this instanceof WeModuleSite || 0) ? (include $this->template('common/footer', TEMPLATE_INCLUDEPATH)) : (include template('common/footer', TEMPLATE_INCLUDEPATH));?>
 

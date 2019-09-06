@@ -18,8 +18,21 @@ load()->classs('oauth2/oauth2client');
 
 $_W['token'] = token();
 $session = json_decode(authcode($_GPC['__session']), true);
-if (is_array($session)) {
-	$user = user_single(array('uid'=>$session['uid']));
+
+    if (is_array($session)) {
+
+        $server_ip = '';
+        if (isset($_SERVER)) {
+            if (isset($_SERVER['SERVER_ADDR'])) {
+                $server_ip = $_SERVER['SERVER_ADDR'];
+            } elseif (isset($_SERVER['LOCAL_ADDR'])) {
+                $server_ip = $_SERVER['LOCAL_ADDR'];
+            }
+        } else {
+            $server_ip = getenv('SERVER_ADDR');
+        }
+
+	    $user = user_single(array('uid'=>$session['uid']));
 		if (is_array($user) && ($session['hash'] === md5($user['password'] . $user['salt']) || $session['hash'] == $user['hash'])) {
 		unset($user['password'], $user['salt']);
 		$_W['uid'] = $user['uid'];
@@ -28,6 +41,12 @@ if (is_array($session)) {
 		$user['currentip'] = $user['lastip'];
 		$user['lastvisit'] = $session['lastvisit'];
 		$user['lastip'] = $session['lastip'];
+
+		if($server_ip != $session['lastip']){
+            isetcookie('__session', '', -10000);
+            isetcookie('__switch', '', -10000);
+        }
+
 		$_W['user'] = $user;
 		$_W['isfounder'] = user_is_founder($_W['uid']);
 		unset($founders);

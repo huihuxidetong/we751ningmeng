@@ -8,7 +8,6 @@ defined('IN_IA') or exit('Access Denied');
 load()->model('user');
 
 $_W['page']['title'] = '添加用户 - 用户管理';
-
 if (checksubmit()) {
 	if (!empty($_GPC['vice_founder_name'])) {
 		$vice_founder_name = safe_gpc_string($_GPC['vice_founder_name']);
@@ -19,6 +18,15 @@ if (checksubmit()) {
 		if (!user_is_vice_founder($vice_founder_info['uid'])) {
 			itoast('请勿添加非副创始人姓名！');
 		}
+	}
+	//密码验证.
+	$check_pwd = trim($_GPC['password']);
+	if (!(strlen($check_pwd) >= 8)) {//必须大于8个字符
+	    itoast('密码长度必须8位以上！');
+	}
+	//var_dump(preg_match("/^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,16}$/", $check_pwd));
+	if (!preg_match("/^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,16}$/", $check_pwd)) {
+		itoast('密码必须包含数字，字母大小写或者特殊字符');
 	}
 	$user_founder = array(
 		'username' => safe_gpc_string($_GPC['username']),

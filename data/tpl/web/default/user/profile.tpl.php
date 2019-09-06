@@ -80,6 +80,7 @@
 						<div class="modal-title">修改密码</div>
 					</div>
 					<div class="modal-body text-center">
+						<p style="color:#ff0000;">*密码长度必须8位以上,且必须包含数字，字母大小写或者特殊字符</p>
 						<div class="we7-form" style="width: 450px; margin: 0 auto;">
 							<?php  if(empty($user['register_type'])) { ?>
 							<div class="form-group">

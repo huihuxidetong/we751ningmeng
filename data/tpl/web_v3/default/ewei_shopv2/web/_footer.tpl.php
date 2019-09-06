@@ -102,5 +102,5 @@
     <script language="javascript">myrequire(['../../plugin/merch/static/js/manage/init']);</script>
 <?php  } ?>
 
-<script>$(function(){$('img').attr('onerror', '').on('error', function(){if (!$(this).data('check-src') && (this.src.indexOf('http://') > -1 || this.src.indexOf('https://') > -1)) {this.src = this.src.indexOf('http://www.test.com/attachment/') == -1 ? this.src.replace('http://renren-ningchao.oss-cn-shanghai.aliyuncs.com/', 'http://www.test.com/attachment/') : this.src.replace('http://www.test.com/attachment/', 'http://renren-ningchao.oss-cn-shanghai.aliyuncs.com/');$(this).data('check-src', true);}});});</script></body>
+<script>$(function(){$('img').attr('onerror', '').on('error', function(){if (!$(this).data('check-src') && (this.src.indexOf('http://') > -1 || this.src.indexOf('https://') > -1)) {this.src = this.src.indexOf('http://localhost/attachment/') == -1 ? this.src.replace('http://renren-ningchao.oss-cn-shanghai.aliyuncs.com/', 'http://localhost/attachment/') : this.src.replace('http://localhost/attachment/', 'http://renren-ningchao.oss-cn-shanghai.aliyuncs.com/');$(this).data('check-src', true);}});});</script></body>
 </html>

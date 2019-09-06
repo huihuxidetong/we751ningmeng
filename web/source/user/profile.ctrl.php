@@ -16,7 +16,6 @@ $_W['page']['title'] = '账号信息 - 我的账户 - 用户管理';
 
 if ($do == 'post' && $_W['isajax'] && $_W['ispost']) {
 	$type = trim($_GPC['type']);
-
 	if ($_W['isfounder']) {
 		$uid = is_array($_GPC['uid']) ? 0 : intval($_GPC['uid']);
 	} else {
@@ -47,6 +46,7 @@ if ($do == 'post' && $_W['isajax'] && $_W['ispost']) {
 			if ($users_profile_exist[$type] == $_GPC[$type]) iajax(0, '未作修改！', '');
 		}
 	}
+	
 	switch ($type) {
 		case 'avatar':
 		case 'realname':
@@ -124,14 +124,22 @@ if ($do == 'post' && $_W['isajax'] && $_W['ispost']) {
 			if (is_error($check_safe)) {
 				iajax(4, $check_safe['message']);
 			}
-
 			if (!$_W['isfounder'] && empty($user['register_type'])) {
 				$pwd = user_hash($_GPC['oldpwd'], $user['salt']);
 				if ($pwd != $user['password']) iajax(3, '原密码不正确！', '');
 			}
 			$newpwd = user_hash($_GPC['newpwd'], $user['salt']);
 			if ($newpwd == $user['password']) {
-				iajax(0, '未作修改！', '');
+				iajax(4, '未作修改！', '');
+			}
+			//密码验证.
+			$check_pwd = trim($_GPC['newpwd']);
+			if (!(strlen($check_pwd) >= 8)) {//必须大于8个字符
+			    iajax(4, '密码长度必须8位以上！', '');
+			}
+			//var_dump(preg_match("/^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,16}$/", $check_pwd));
+			if (!preg_match("/^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,16}$/", $check_pwd)) {
+				iajax(4, '密码必须包含数字，字母大小写或者特殊字符', '');
 			}
 			$result = pdo_update('users', array('password' => $newpwd), array('uid' => $uid));
 			break;

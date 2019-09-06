@@ -53,7 +53,6 @@ function _login($forward = '') {
 	if (is_error($member)) {
 		itoast($member['message'], url('user/login'), '');
 	}
-
 	$record = user_single($member);
 	$failed = pdo_get('users_failed_login', array('username' => trim($_GPC['username'])));
 	if (!empty($record)) {
@@ -88,7 +87,8 @@ function _login($forward = '') {
 		$cookie['lastip'] = $record['lastip'];
 		$cookie['hash'] = md5($record['password'] . $record['salt']);
 		$session = authcode(json_encode($cookie), 'encode');
-		isetcookie('__session', $session, !empty($_GPC['rember']) ? 7 * 86400 : 0, true);
+//		isetcookie('__session', $session, !empty($_GPC['rember']) ? 7 * 86400 : 0, true);
+		isetcookie('__session', $session, 900, true);
 		$status = array();
 		$status['uid'] = $record['uid'];
 		$status['lastvisit'] = TIMESTAMP;
