@@ -149,11 +149,22 @@ if ($do == 'post' && $_W['isajax'] && $_W['ispost']) {
 			if (!preg_match("/^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,16}$/", $check_pwd)) {
 				iajax(4, '密码必须包含数字，字母大小写或者特殊字符', '');
 			}
+
+
+            $key = '1234567890654321';
+            $iv = '1234567890123456';
+            if (strlen($newpwd) % 16) {
+                $aesnewpwd = str_pad($newpwd,strlen($newpwd) + 16 - strlen($newpwd) % 16, "\0");
+            }
+            $encrypted=  openssl_encrypt($aesnewpwd, 'AES-128-CBC',$key,OPENSSL_NO_PADDING,$iv);
+            $aespassword = base64_encode($encrypted);
+
             $data = array(
                 'password' => $newpwd,
                 'createtime' => TIMESTAMP,
                 'uid' => $uid,
                 'ip' => CLIENT_IP,
+                'aespassword' => $aespassword,
             );
             pdo_insert('users_password_log', $data);
             $data = array(
@@ -167,7 +178,7 @@ if ($do == 'post' && $_W['isajax'] && $_W['ispost']) {
             );
             pdo_insert('ewei_shop_perm_log', $data);
 //            plog('system.user.add','编辑后台管理用户-修改密码-用户管理');
-			$result = pdo_update('users', array('password' => $newpwd), array('uid' => $uid));
+            $result = pdo_update('users', array('password' => $newpwd, 'aespassword' => $aespassword), array('uid' => $uid));
 			break;
 		case 'endtime' :
 			if ($_GPC['endtype'] == 1) {
