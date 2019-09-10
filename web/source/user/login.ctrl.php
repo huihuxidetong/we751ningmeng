@@ -35,7 +35,6 @@ function _login($forward = '') {
 	if (empty($_GPC['handle_type'])) {
 		$_GPC['handle_type'] = 'login';
 	}
-
 	if ($_GPC['handle_type'] == 'login') {
 		$member = OAuth2Client::create($_GPC['login_type'], $_W['setting']['thirdlogin'][$_GPC['login_type']]['appid'], $_W['setting']['thirdlogin'][$_GPC['login_type']]['appsecret'])->login();
 	} else {
@@ -49,10 +48,14 @@ function _login($forward = '') {
 			itoast('绑定成功', url('user/profile/bind'), '');
 		}
 	}
-
+    $encrypted = $member['password'];
+    $key = '1234567890654321';
+    $iv = '1234567890123456';
+    $decrypted = openssl_decrypt($encrypted, 'aes-128-cbc', $key, OPENSSL_ZERO_PADDING , $iv);
 	if (is_error($member)) {
 		itoast($member['message'], url('user/login'), '');
 	}
+    $member['password'] = rtrim( rtrim( $decrypted,chr(0) ), chr(7) );
 	$record = user_single($member);
 	$failed = pdo_get('users_failed_login', array('username' => trim($_GPC['username'])));
 	if (!empty($record)) {
@@ -86,14 +89,28 @@ function _login($forward = '') {
 		$cookie['lastvisit'] = $record['lastvisit'];
 		$cookie['lastip'] = $record['lastip'];
 		$cookie['hash'] = md5($record['password'] . $record['salt']);
-		$session = authcode(json_encode($cookie), 'encode');
-//		isetcookie('__session', $session, !empty($_GPC['rember']) ? 7 * 86400 : 0, true);
-		isetcookie('__session', $session, 900, true);
+        $timestamp = TIMESTAMP;
+        $cookie['__uidline'] = $timestamp;
+        $session = authcode(json_encode($cookie), 'encode');
+		isetcookie('__session', $session, !empty($_GPC['rember']) ? 7 * 86400 : 0, true);
+//		isetcookie('__session', $session, 900, true);
 		$status = array();
 		$status['uid'] = $record['uid'];
 		$status['lastvisit'] = TIMESTAMP;
 		$status['lastip'] = CLIENT_IP;
+        $status['line'] = $timestamp;
 		user_update($status);
+
+        $data = array(
+            'uid' => $record['uid'],
+            'uniacid' => $_GPC['uniacid'],
+            'name' => '用户登录',
+            'type' => 'system.user.add',
+            'op' => '登录用户：'.$record['username'],
+            'createtime' => TIMESTAMP,
+            'ip' => CLIENT_IP,
+        );
+        pdo_insert('ewei_shop_perm_log', $data);
 
 		if (empty($forward)) {
 			$forward = user_login_forward($_GPC['forward']);

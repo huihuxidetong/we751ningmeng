@@ -9,7 +9,6 @@ load()->func('file');
 load()->classs('oauth2/oauth2client');
 load()->model('message');
 load()->model('setting');
-
 $dos = array('base', 'post', 'bind', 'validate_mobile', 'bind_mobile', 'unbind');
 $do = in_array($do, $dos) ? $do : 'base';
 $_W['page']['title'] = '账号信息 - 我的账户 - 用户管理';
@@ -118,8 +117,19 @@ if ($do == 'post' && $_W['isajax'] && $_W['ispost']) {
 			$result = pdo_update('users', array('welcome_link' => $welcome_link), array('uid' => $uid));
 			break;
 		case 'password':
-			if ($_GPC['newpwd'] !== $_GPC['renewpwd']) iajax(2, '两次密码不一致！', '');
+            $newpwd = user_hash($_GPC['newpwd'], $user['salt']);
+            $list = pdo_fetchall("SELECT * FROM ".tablename("users_password_log") ." WHERE uid = '$uid' order by createtime desc limit 6");
+            $number = 0;
+            foreach( $list as $key => $value ) {
+                if($newpwd == $value['password']){
+                    $number ++ ;
+                }
+            }
+            if($number >0){
+                iajax(4, '新密码不能与最近六次次相同！', '');
+            }
 
+			if ($_GPC['newpwd'] !== $_GPC['renewpwd']) iajax(2, '两次密码不一致！', '');
 			$check_safe = safe_check_password($_GPC['newpwd']);
 			if (is_error($check_safe)) {
 				iajax(4, $check_safe['message']);
@@ -128,7 +138,6 @@ if ($do == 'post' && $_W['isajax'] && $_W['ispost']) {
 				$pwd = user_hash($_GPC['oldpwd'], $user['salt']);
 				if ($pwd != $user['password']) iajax(3, '原密码不正确！', '');
 			}
-			$newpwd = user_hash($_GPC['newpwd'], $user['salt']);
 			if ($newpwd == $user['password']) {
 				iajax(4, '未作修改！', '');
 			}
@@ -137,10 +146,27 @@ if ($do == 'post' && $_W['isajax'] && $_W['ispost']) {
 			if (!(strlen($check_pwd) >= 8)) {//必须大于8个字符
 			    iajax(4, '密码长度必须8位以上！', '');
 			}
-			//var_dump(preg_match("/^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,16}$/", $check_pwd));
 			if (!preg_match("/^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,16}$/", $check_pwd)) {
 				iajax(4, '密码必须包含数字，字母大小写或者特殊字符', '');
 			}
+            $data = array(
+                'password' => $newpwd,
+                'createtime' => TIMESTAMP,
+                'uid' => $uid,
+                'ip' => CLIENT_IP,
+            );
+            pdo_insert('users_password_log', $data);
+            $data = array(
+                'uid' => $uid,
+                'uniacid' => $_GPC['uniacid'],
+                'name' => '编辑后台管理用户-修改密码-用户管理',
+                'type' => 'system.user.add',
+                'op' => '编辑后台管理用户-修改密码-用户管理',
+                'createtime' => TIMESTAMP,
+                'ip' => CLIENT_IP,
+            );
+            pdo_insert('ewei_shop_perm_log', $data);
+//            plog('system.user.add','编辑后台管理用户-修改密码-用户管理');
 			$result = pdo_update('users', array('password' => $newpwd), array('uid' => $uid));
 			break;
 		case 'endtime' :

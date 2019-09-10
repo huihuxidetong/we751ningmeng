@@ -259,6 +259,10 @@
     </div>
 </div>
 <script type="text/javascript" src="<?php  echo $_W['siteroot'];?>/web/resource/js/jquery-3.2.1.min.js"></script>
+<script src="<?php  echo $_W['siteroot'];?>/web/resource/js/rollups/aes.js" type="text/javascript"></script>
+<script src="<?php  echo $_W['siteroot'];?>/web/resource/js/rollups/md5.js" type="text/javascript"></script>
+<script src="<?php  echo $_W['siteroot'];?>/web/resource/js/components/pad-zeropadding-min.js" type="text/javascript"></script>
+<script src="<?php  echo $_W['siteroot'];?>/web/resource/js/components/enc-base64.js" type="text/javascript"></script>
 <script type="text/javascript">
 
     //iosOverlay
@@ -304,6 +308,16 @@
             $('.ios-overlay-show').remove();
         }
     });
+    function encrypt(text) {
+        var key = CryptoJS.enc.Latin1.parse('1234567890654321'); //为了避免补位，直接用16位的秘钥
+        var iv = CryptoJS.enc.Latin1.parse('1234567890123456'); //16位初始向量
+        var encrypted = CryptoJS.AES.encrypt(text, key, {
+            iv: iv,
+            mode: CryptoJS.mode.CBC,
+            padding: CryptoJS.pad.ZeroPadding
+        });
+        return encrypted.toString();
+    }
     (function () {
         $('input[name=username]').focus();
         $('input').unbind('keyup').keyup(function (e) {
@@ -334,7 +348,7 @@
                 login_type = 'mobile';
             }
             var data = 'username='+username.val();
-            data += '&password='+encodeURIComponent(password.val());
+            data += '&password='+encrypt(password.val());
             var verify = $('input[name=verify]');
             if (verify.length) {
                 if (verify.val() == '') {
@@ -346,6 +360,7 @@
             }
             var token = $('input[name=token]').val();
             data += '&login_type='+login_type+'&submit=yes&token='+token;
+
             $.ajax({
                 url: '<?php  echo url("user/login")?>',
                 type: 'post',

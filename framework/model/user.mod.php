@@ -4,8 +4,6 @@
  * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
  */
 defined('IN_IA') or exit('Access Denied');
-
-
 function user_register($user, $source) {
 	load()->model('message');
 	if (empty($user) || !is_array($user)) {
@@ -186,7 +184,7 @@ function user_single($user_or_uid) {
 		return false;
 	}
 	if (!empty($user['password'])) {
-		$password = user_hash($user['password'], $record['salt']);
+        $password = user_hash($user['password'], $record['salt']);
 		if ($password != $record['password']) {
 			return false;
 		}
@@ -228,6 +226,9 @@ function user_update($user) {
 		return false;
 	}
 	$record = array();
+    if (!empty($user['line'])) {
+        $record['line'] = $user['line'];
+    }
 	if (!empty($user['username'])) {
 		$record['username'] = $user['username'];
 	}

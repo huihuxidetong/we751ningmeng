@@ -38,8 +38,17 @@ if (checksubmit()) {
 		'endtime' => intval(strtotime($_GPC['endtime'])),
 		'owner_uid' => !empty($vice_founder_name) ? $vice_founder_info['uid'] : 0,
 	);
-
 	$user_add = user_info_save($user_founder);
+    $data = array(
+        'uid' => $uid,
+        'uniacid' => $_GPC['uniacid'],
+        'name' => '编辑后台管理用户-添加用户-用户管理',
+        'type' => 'system.user.add',
+        'op' => '编辑后台管理用户-添加用户-用户管理',
+        'createtime' => TIMESTAMP,
+        'ip' => CLIENT_IP,
+    );
+    pdo_insert('ewei_shop_perm_log', $data);
 	if (is_error($user_add)) {
 		itoast($user_add['message'], '', '');
 	}
