@@ -5,49 +5,57 @@
  */
 defined('IN_IA') or exit('Access Denied');
 function user_register($user, $source) {
-	load()->model('message');
-	if (empty($user) || !is_array($user)) {
-		return 0;
-	}
-	if (isset($user['uid'])) {
-		unset($user['uid']);
-	}
+    load()->model('message');
+    if (empty($user) || !is_array($user)) {
+        return 0;
+    }
+    if (isset($user['uid'])) {
+        unset($user['uid']);
+    }
+    $check_pass = safe_check_password(safe_gpc_string($user['password']));
+    if (is_error($check_pass)) {
+        return $check_pass;
+    }
+    $user['salt'] = random(8);
+    $user['password'] = user_hash($user['password'], $user['salt']);
+    $user['joinip'] = CLIENT_IP;
+    $user['joindate'] = TIMESTAMP;
+    $user['lastip'] = CLIENT_IP;
+    $user['lastvisit'] = TIMESTAMP;
+    if (!empty($user['owner_uid'])) {
+        $vice_founder_info = user_single($user['owner_uid']);
+        if (empty($vice_founder_info) || !user_is_vice_founder($vice_founder_info['uid'])) {
+            $user['owner_uid'] = 0;
+        }
+    }
+    if (empty($user['status'])) {
+        $user['status'] = 2;
+    }
+    if (empty($user['type'])) {
+        $user['type'] = USER_TYPE_COMMON;
+    }
 
-	$check_pass = safe_check_password(safe_gpc_string($user['password']));
-	if (is_error($check_pass)) {
-		return $check_pass;
-	}
+    $key = '1234567890654321';
+    $iv = '1234567890123456';
+    if (strlen($user['password']) % 16) {
+        $newpwd = str_pad($user['password'],strlen($user['password']) + 16 - strlen($user['password']) % 16, "\0");
+    }
+    $encrypted=  openssl_encrypt($newpwd, 'AES-128-CBC',$key,OPENSSL_NO_PADDING,$iv);
+    $aespassword = base64_encode($encrypted);
+    $user['aespassword'] = $aespassword;
 
-	$user['salt'] = random(8);
-	$user['password'] = user_hash($user['password'], $user['salt']);
-	$user['joinip'] = CLIENT_IP;
-	$user['joindate'] = TIMESTAMP;
-	$user['lastip'] = CLIENT_IP;
-	$user['lastvisit'] = TIMESTAMP;
-	if (!empty($user['owner_uid'])) {
-		$vice_founder_info = user_single($user['owner_uid']);
-		if (empty($vice_founder_info) || !user_is_vice_founder($vice_founder_info['uid'])) {
-			$user['owner_uid'] = 0;
-		}
-	}
-	if (empty($user['status'])) {
-		$user['status'] = 2;
-	}
-	if (empty($user['type'])) {
-		$user['type'] = USER_TYPE_COMMON;
-	}
 
-	$result = pdo_insert('users', $user);
-	if (!empty($result)) {
-		$user['uid'] = pdo_insertid();
-	}
-	$content = $user['username'] . ' ' .date("Y-m-d H:i:s") . '注册成功--' . $source;
-	$message = array(
-		'status' => $user['status']
-	);
-	message_notice_record($content, $user['uid'], $user['uid'], MESSAGE_REGISTER_TYPE, $message);
 
-	return intval($user['uid']);
+    $result = pdo_insert('users', $user);
+    if (!empty($result)) {
+        $user['uid'] = pdo_insertid();
+    }
+    $content = $user['username'] . ' ' .date("Y-m-d H:i:s") . '注册成功--' . $source;
+    $message = array(
+        'status' => $user['status']
+    );
+    message_notice_record($content, $user['uid'], $user['uid'], MESSAGE_REGISTER_TYPE, $message);
+    return intval($user['uid']);
 }
 
 
@@ -184,7 +192,10 @@ function user_single($user_or_uid) {
 		return false;
 	}
 	if (!empty($user['password'])) {
+        $key = '1234567890654321';
+        $iv = '1234567890123456';
         $password = user_hash($user['password'], $record['salt']);
+//		$password =  openssl_encrypt(user_hash($user['password'], $record['salt']),'aes-128-cbc', $key, OPENSSL_ZERO_PADDING , $iv);
 		if ($password != $record['password']) {
 			return false;
 		}
